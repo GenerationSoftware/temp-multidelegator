@@ -12,9 +12,6 @@ export LOCIZE_PROJECTID=$NEXT_PUBLIC_LOCIZE_PROJECT_ID
 export NEXT_PUBLIC_LOCIZE_VERSION=latest
 export LOCIZE_VERSION=$NEXT_PUBLIC_LOCIZE_VERSION
 
-# Sentry DSN
-export NEXT_PUBLIC_SENTRY_DSN='https://4fdc1a801e82443a8cd700629d2c301a@o302107.ingest.sentry.io/6326699'
-
 # RPC URLs to use. Provided URLs will take precedence in the app.
 # Ethereum
 export NEXT_PUBLIC_ETHEREUM_MAINNET_RPC_URL=https://mainnet.infura.io/v3/
@@ -42,7 +39,3 @@ export NEXT_PUBLIC_CELO_TESTNET_RPC_URL=
 # Locize Dev API key for writing values.
 export NEXT_PUBLIC_LOCIZE_DEV_API_KEY=
 export LOCIZE_API_KEY=$NEXT_PUBLIC_LOCIZE_DEV_API_KEY
-
-# Optional
-# Fathom API keys for analytics tracking.
-export NEXT_PUBLIC_FATHOM_SITE_ID=

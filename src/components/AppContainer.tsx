@@ -1,12 +1,7 @@
 import { RPC_URLS } from '@constants/config'
-import { CHAIN_ID } from '@constants/misc'
 import { useInitCookieOptions } from '@pooltogether/hooks'
 import { ScreenSize, useScreenSize, LoadingScreen } from '@pooltogether/react-components'
-import {
-  useUpdateStoredPendingTransactions,
-  getReadProvider,
-  initRpcUrls
-} from '@pooltogether/wallet-connection'
+import { useUpdateStoredPendingTransactions, initRpcUrls } from '@pooltogether/wallet-connection'
 import {
   RainbowKitProvider,
   lightTheme,
@@ -16,23 +11,16 @@ import {
 import { getSupportedChains } from '@utils/getSupportedChains'
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
 import { publicProvider } from '@wagmi/core/providers/public'
-import * as Fathom from 'fathom-client'
 import { Provider as JotaiProvider } from 'jotai'
 import { Trans } from 'next-i18next'
 import { useTranslation } from 'next-i18next'
 import { ThemeProvider, useTheme } from 'next-themes'
 import { AppProps } from 'next/app'
-import { useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { ToastContainer, ToastContainerProps } from 'react-toastify'
 import { configureChains, Connector, createClient, useAccount, WagmiConfig } from 'wagmi'
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
-import { InjectedConnector } from 'wagmi/connectors/injected'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { getWalletConnectors } from '../services/walletConnection'
-import { CustomErrorBoundary } from './CustomErrorBoundary'
 
 // Initialize react-query Query Client
 const queryClient = new QueryClient({
@@ -46,9 +34,6 @@ const queryClient = new QueryClient({
     }
   }
 })
-
-// Initialize Sentry error logging
-// initSentry()
 
 // Initialize global RPC URLs for external packages
 initRpcUrls(RPC_URLS)
@@ -74,31 +59,11 @@ const wagmiClient = createClient({
 
 /**
  * AppContainer wraps all pages in the app. Used to set up globals.
- * TODO: Add Sentry
  * @param props
  * @returns
  */
 export const AppContainer: React.FC<AppProps> = (props) => {
-  const { router } = props
-
-  useEffect(() => {
-    const fathomSiteId = process.env.NEXT_PUBLIC_FATHOM_SITE_ID
-    if (fathomSiteId) {
-      Fathom.load(process.env.NEXT_PUBLIC_FATHOM_SITE_ID, {
-        url: 'https://goose.pooltogether.com/script.js',
-        includedDomains: ['app.pooltogether.com', 'v4.pooltogether.com']
-      })
-      const onRouteChangeComplete = (url) => {
-        if (window['fathom']) {
-          window['fathom'].trackPageview()
-        }
-      }
-      router.events.on('routeChangeComplete', onRouteChangeComplete)
-      return () => {
-        router.events.off('routeChangeComplete', onRouteChangeComplete)
-      }
-    }
-  }, [])
+  const {} = props
 
   return (
     <WagmiConfig client={wagmiClient}>
@@ -128,9 +93,7 @@ export const AppContainer: React.FC<AppProps> = (props) => {
             <ReactQueryDevtools />
             <ThemeProvider attribute='class' defaultTheme='dark'>
               <ThemedToastContainer />
-              <CustomErrorBoundary>
-                <Content {...props} />
-              </CustomErrorBoundary>
+              <Content {...props} />
             </ThemeProvider>
           </QueryClientProvider>
         </JotaiProvider>

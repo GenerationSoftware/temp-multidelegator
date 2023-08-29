@@ -3,8 +3,6 @@
 .yalc/**
 yalc.lock
 
-/public/locales
-
 # dependencies
 .envrc
 /node_modules
@@ -45,15 +43,3 @@ functions-out
 
 # Local Netlify folder
 .netlify
-
-# Sentry
-.sentryclirc
-
-# Sentry
-.sentryclirc
-
-# Sentry
-.sentryclirc
-
-# Sentry
-.sentryclirc

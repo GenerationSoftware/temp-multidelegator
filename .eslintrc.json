@@ -7,26 +7,7 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {
-        "import/order": [
-          "error",
-          {
-            "groups": ["builtin", "external", "internal"],
-            "pathGroups": [
-              {
-                "pattern": "react",
-                "group": "external",
-                "position": "before"
-              }
-            ],
-            "newlines-between": "never",
-            "alphabetize": {
-              "order": "asc",
-              "caseInsensitive": true
-            }
-          }
-        ]
-      }
+      "rules": {}
     }
   ]
 }

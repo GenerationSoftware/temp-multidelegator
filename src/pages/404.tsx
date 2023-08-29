@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import nextI18NextConfig from '../../next-i18next.config.js'
-import { ErrorLinks } from '../tools/ErrorPage'
+import { ErrorLinks } from '@components/ErrorPage'
 
 export async function getStaticProps({ locale }) {
   return {
