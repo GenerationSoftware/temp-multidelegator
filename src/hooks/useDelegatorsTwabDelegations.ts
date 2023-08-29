@@ -28,7 +28,6 @@ export const useDelegatorsTwabDelegations = (chainId: number, delegator: string)
 }
 
 /**
- * TODO: One day this will blow up if someone delegates to more than the max value of a js number...
  * @param chainId
  * @param delegator
  * @returns

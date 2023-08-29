@@ -80,8 +80,6 @@ export const useBulkSendTransactionOptions = (
     csvUpdates.delegationFunds
   )
 
-  // TODO: If there's no balance or staked amount if rep - don't run
-
   /**
    *
    * @param delegationId
@@ -336,7 +334,6 @@ export const useBulkSendTransactionOptions = (
           //     )
           // })
 
-          // TODO: it worked for a rep but not for the delegator themself
           // if (chunkedFnCalls.length > 1) {
           //   for (let i = 1; i < chunkedFnCalls.length; i++) {
           //     transactionsToSend.push({

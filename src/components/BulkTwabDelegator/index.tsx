@@ -23,7 +23,6 @@ const Layout = dynamic(() => import('@components/Layout'), {
   suspense: true
 })
 
-// TODO: Go to confirmation modal while wallet is on wrong network. Switch networks. Lotsa problems.
 export const BulkTwabDelegator: React.FC = () => {
   const [chainId] = useAtom(delegationChainIdAtom)
   const [delegator] = useAtom(delegatorAtom)

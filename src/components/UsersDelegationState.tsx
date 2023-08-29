@@ -209,17 +209,6 @@ export const ChangeDelegatorModal: React.FC<{
         autoComplete='off'
         className='flex flex-col'
       >
-        {/* TODO: Is this clearer than the clear button? Showing a shortcut to fill input with the users address. */}
-        {/* {usersAddress && (
-          <button
-            type='button'
-            className='transition ml-auto font-bold text-pt-teal hover:opacity-70'
-            disabled={!isValid}
-            onClick={() => setValue('delegator', usersAddress, { shouldValidate: true })}
-          >
-            {shorten({ hash: usersAddress })}
-          </button>
-        )} */}
         <StyledInput
           id='delegator'
           invalid={!!errors.delegator}

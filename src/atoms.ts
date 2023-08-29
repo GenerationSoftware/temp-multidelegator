@@ -55,7 +55,6 @@ const getStartingDelegationChainId = () => {
 
 /**
  * The chain id to use for the delegation view.
- * TODO: Eventually we'll need to update this to a specific deployment when there are more than 1 on a chain.
  */
 export const delegationChainIdAtom = atom<number>(CHAIN_ID.mainnet)
 delegationChainIdAtom.onMount = (setAtom) => setAtom(getStartingDelegationChainId())

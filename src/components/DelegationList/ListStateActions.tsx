@@ -43,7 +43,6 @@ interface ListStateActionsProps {
   setDelegator: (delegator: string) => void
 }
 
-// TODO: Cancel confirmation modal
 export const ListStateActions: React.FC<ListStateActionsProps> = (props) => {
   const { chainId, listState, transactionsPending, delegator, setDelegator, setListState } = props
   const [editsCount] = useAtom(delegationUpdatesCountAtom)
@@ -68,7 +67,6 @@ export const ListStateActions: React.FC<ListStateActionsProps> = (props) => {
 
   if (!isRepresentativeFetched) return null
 
-  // TODO: Return a wrapper with content so we can pass classNames and style the container easier
   if (delegator && usersAddress !== delegator && !isUserARepresentative) {
     return (
       <FixedFooterNav>

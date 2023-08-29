@@ -24,16 +24,6 @@ enum ModalState {
 }
 
 /**
- * TODO: Add a list of the delegators current representatives.
- * Fetch the data from the graph if possible and display a list of copyable addresses.
- * Potentially also show a list of delegates who delegated to the connect wallet somewhere else so they can easily switch the delegator and manage delegations.
- *
- * https://thegraph.com/hosted-service/subgraph/pooltogether/
- * https://thegraph.com/hosted-service/dashboard?account=pooltogether
- * https://thegraph.com/hosted-service/subgraph/pooltogether/avalanche-twab-delegator
- * https://thegraph.com/hosted-service/subgraph/pooltogether/mainnet-twab-delegator
- * https://thegraph.com/hosted-service/subgraph/pooltogether/polygon-twab-delegator
- *
  *
  * @param props
  * @returns

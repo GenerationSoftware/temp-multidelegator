@@ -37,7 +37,6 @@ enum ConfirmModalState {
 }
 
 /**
- * TODO: Show users Ticket balance after the update goes through: 526.12 PTaUSDC - (100 PTaUSDC in update)
  * @param props
  * @returns
  */

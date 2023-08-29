@@ -11,7 +11,6 @@ import { SubmitBulkDelegations } from './SubmitBulkDelegations'
 import { TransactionsList } from './TransactionsList'
 
 /**
- * TODO: Check for existing locks and block this tool cause that's too annoying to deal with.
  * @returns
  */
 export const BulkTwabDelegationSteps = () => {

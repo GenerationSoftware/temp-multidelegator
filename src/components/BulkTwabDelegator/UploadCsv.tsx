@@ -33,7 +33,6 @@ export const UploadCsv: React.FC<{
 
   /**
    * Builds all of the data objects that need to be submitted in transactions to overwrite the state of delegations
-   * TODO: Handle attempts to overwrite locked delegations
    * @param bulkDelegations
    */
   const updateOrCreateDelegations = (bulkDelegations: DelegationFormValues[]) => {

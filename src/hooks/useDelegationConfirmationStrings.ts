@@ -12,7 +12,6 @@ import { useMemo } from 'react'
 import { useDelegatorsTwabDelegations } from './useDelegatorsTwabDelegations'
 
 /**
- * // TODO: Make this more efficient.
  * @param chainId
  * @param delegator
  * @returns
