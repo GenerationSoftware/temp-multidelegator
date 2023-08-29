@@ -24,7 +24,7 @@ export const BulkTwabDelegationSteps = () => {
     delegationCreations: [],
     delegationFunds: []
   })
-  const [isSignaturePending, setSignaturePending] = useState(false)
+  const [isApprovalPending, setApprovalPending] = useState(false)
   const [isChunkingPending, setChunkingPending] = useState(false)
   const [transactionIds, setTransactionIds] = useState<string[]>([])
   const pushTransactionId = (id: string) => setTransactionIds((ids) => [...ids, id])
@@ -38,7 +38,7 @@ export const BulkTwabDelegationSteps = () => {
     isFetching: isTransactionOptionsFetching
   } = useBulkSendTransactionOptions(
     csvUpdates,
-    setSignaturePending,
+    setApprovalPending,
     setChunkingPending,
     pushTransactionId,
     () => setTransactionIds([])
@@ -94,7 +94,7 @@ export const BulkTwabDelegationSteps = () => {
               csvUpdates={csvUpdates}
               disabled={!isTransactionOptionsFetched || isTransactionOptionsFetching}
               sendTransactions={sendTransactions}
-              isSignaturePending={isSignaturePending}
+              isApprovalPending={isApprovalPending}
               isChunkingPending={isChunkingPending}
               bulkSendTransactionOptions={bulkSendTransactionOptions}
               isTransactionOptionsFetching={isTransactionOptionsFetching}

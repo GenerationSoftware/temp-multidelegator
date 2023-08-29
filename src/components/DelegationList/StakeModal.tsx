@@ -1,7 +1,7 @@
 import { TxButton } from '@components/Buttons/TxButton'
 import { ErrorMessage } from '@components/ErrorMessage'
 import { StyledInput } from '@components/Input'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { Token, useTokenAllowance } from '@pooltogether/hooks'
 import { BottomSheet, ModalTitle, Button, ButtonTheme } from '@pooltogether/react-components'
 import {
@@ -13,9 +13,9 @@ import { DELEGATION_LEARN_MORE_URL } from '@constants/config'
 import { useDelegatorsStake } from '@hooks/useDelegatorsStake'
 import { getTwabDelegatorContract } from '@utils/getTwabDelegatorContract'
 import { getTwabDelegatorContractAddress } from '@utils/getTwabDelegatorContractAddress'
-import { getV4TicketContract } from '@utils/getV4TicketContract'
-import { signERC2612Permit } from 'eth-permit'
-import { BigNumber } from 'ethers'
+import { getTicketContract } from '@utils/getTicketContract'
+// import { signERC2612Permit } from 'eth-permit'
+// import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils'
 import FeatherIcon from 'feather-icons-react'
 import { useTranslation } from 'next-i18next'
@@ -23,6 +23,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useSigner } from 'wagmi'
+import { approveErc20Spender } from '@utils/transactions/approveErc20Spender'
 
 enum ModalState {
   main = 'MAIN',
@@ -37,8 +38,7 @@ export const StakeModal: React.FC<{
   closeModal: () => void
 }> = (props) => {
   const { isOpen, chainId, delegator, closeModal } = props
-  const ticket = useV4Ticket(chainId)
-  const { t } = useTranslation()
+  const ticket = useTicket(chainId)
   const [modalState, setModalState] = useState<ModalState>(ModalState.main)
 
   let view = <ManageStakeHomeView chainId={chainId} ticket={ticket} setModalState={setModalState} />
@@ -182,7 +182,7 @@ const AddStakeForm: React.FC<{
   const { chainId, ticket, delegator } = props
   const { t } = useTranslation()
 
-  const [isSignaturePending, setSignaturePending] = useState<boolean>(false)
+  const [isApprovalPending, setApprovalPending] = useState<boolean>(false)
   const usersAddress = useUsersAddress()
   const twabDelegatorAddress = getTwabDelegatorContractAddress(chainId)
   const { data: allowanceUnformatted, isFetched: isAllowanceFetched } = useTokenAllowance(
@@ -210,84 +210,92 @@ const AddStakeForm: React.FC<{
   const onSubmit = async (amount: string) => {
     const amountUnformatted = parseUnits(amount, ticket.decimals)
     const twabDelegatorContract = getTwabDelegatorContract(chainId, signer)
-    const ticketContract = getV4TicketContract(chainId)
+    const ticketContract = getTicketContract(chainId)
 
     // Default case if user has enough allowance
     let callTransaction = () => twabDelegatorContract.stake(delegator, amountUnformatted)
 
-    // Otherwise, get signature approval
+    // Otherwise, get approval
     if (allowanceUnformatted.lt(amountUnformatted)) {
-      setSignaturePending(true)
+      setApprovalPending(true)
 
       const amountToIncrease = amountUnformatted.sub(allowanceUnformatted)
-      const domain = {
-        name: 'PoolTogether ControlledToken',
-        version: '1',
-        chainId,
-        verifyingContract: ticketContract.address
-      }
+      // const domain = {
+      //   name: 'PoolTogether ControlledToken',
+      //   version: '1',
+      //   chainId,
+      //   verifyingContract: ticketContract.address
+      // }
 
       // NOTE: Nonce must be passed manually for signERC2612Permit to work with WalletConnect
-      const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
-      const response = await ticketContract.functions.nonces(usersAddress)
-      const nonce: BigNumber = response[0]
+      // const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
+      // const response = await ticketContract.functions.nonces(usersAddress)
+      // const nonce: BigNumber = response[0]
 
-      const signaturePromise = signERC2612Permit(
+      // const signaturePromise = signERC2612Permit(
+      //   signer,
+      //   domain,
+      //   usersAddress,
+      //   twabDelegatorContract.address,
+      //   amountToIncrease.toString(),
+      //   deadline,
+      //   nonce.toNumber()
+      // )
+
+      const approvalPromise = approveErc20Spender(
         signer,
-        domain,
-        usersAddress,
+        ticketContract.address,
         twabDelegatorContract.address,
-        amountToIncrease.toString(),
-        deadline,
-        nonce.toNumber()
+        amountToIncrease
       )
 
-      toast.promise(signaturePromise, {
+      toast.promise(approvalPromise, {
         pending: t('signatureIsPending'),
         error: t('signatureRejected')
       })
 
       try {
-        const signature = await signaturePromise
+        // const signature = await signaturePromise
+        await approvalPromise
 
         // Overwrite v for hardware wallet signatures
         // https://ethereum.stackexchange.com/questions/103307/cannot-verifiy-a-signature-produced-by-ledger-in-solidity-using-ecrecover
-        const v = signature.v < 27 ? signature.v + 27 : signature.v
+        // const v = signature.v < 27 ? signature.v + 27 : signature.v
 
-        const populatedTx = await twabDelegatorContract.populateTransaction.stake(
-          delegator,
-          amountUnformatted
-        )
+        // const populatedTx = await twabDelegatorContract.populateTransaction.stake(
+        //   delegator,
+        //   amountUnformatted
+        // )
 
-        callTransaction = async () =>
-          twabDelegatorContract.permitAndMulticall(
-            amountToIncrease,
-            {
-              deadline: signature.deadline,
-              v,
-              r: signature.r,
-              s: signature.s
-            },
-            [populatedTx.data]
-          )
+        // callTransaction = async () =>
+        //   twabDelegatorContract.permitAndMulticall(
+        //     amountToIncrease,
+        //     {
+        //       deadline: signature.deadline,
+        //       v,
+        //       r: signature.r,
+        //       s: signature.s
+        //     },
+        //     [populatedTx.data]
+        //   )
       } catch (e) {
-        setSignaturePending(false)
+        setApprovalPending(false)
         console.error(e)
         return
       }
+    } else {
+      setTransactionId(
+        sendTransaction({
+          name: t('stake'),
+          callTransaction,
+          callbacks: {
+            onSentToWallet: () => setApprovalPending(false),
+            onConfirmedByUser: () => reset(),
+            onSuccess: () => refetchStake()
+          }
+        })
+      )
     }
-
-    setTransactionId(
-      sendTransaction({
-        name: t('stake'),
-        callTransaction,
-        callbacks: {
-          onSentToWallet: () => setSignaturePending(false),
-          onConfirmedByUser: () => reset(),
-          onSuccess: () => refetchStake()
-        }
-      })
-    )
   }
 
   return (
@@ -326,10 +334,10 @@ const AddStakeForm: React.FC<{
           state={transaction?.state}
           status={transaction?.status}
           className='w-full capitalize mb-3'
-          disabled={!isValid || !isAllowanceFetched || isSignaturePending}
+          disabled={!isValid || !isAllowanceFetched || isApprovalPending}
           onClick={() => onSubmit(amount)}
         >
-          {isSignaturePending ? t('signatureIsPending') : t('stakeToken', { token: ticket.symbol })}
+          {isApprovalPending ? t('signatureIsPending') : t('stakeToken', { token: ticket.symbol })}
         </TxButton>
       </form>
     </>

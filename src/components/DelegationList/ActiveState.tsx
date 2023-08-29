@@ -1,7 +1,7 @@
 import { LockedSvg, UnlockedSvg } from '@components/SvgComponents'
 import { SECONDS_PER_DAY, SECONDS_PER_HOUR } from '@constants/misc'
 import { usePagination } from '@hooks/usePagination'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import {
   CheckboxInputGroup,
   Button,
@@ -303,7 +303,7 @@ const BalanceDisplay: React.FC<{
   listState: ListState
 }> = (props) => {
   const { className, chainId, balance, listState } = props
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const balanceDisplay = numberWithCommas(balance, { decimals: ticket.decimals })
   return (
     <div

@@ -23,7 +23,7 @@ export const SubmitBulkDelegations: React.FC<{
   disabled: boolean
   transactions: Transaction[]
   sendTransactions: () => void
-  isSignaturePending: boolean
+  isApprovalPending: boolean
   isChunkingPending: boolean
   bulkSendTransactionOptions: SendTransactionOptions[]
   isTransactionOptionsFetching: boolean
@@ -34,7 +34,7 @@ export const SubmitBulkDelegations: React.FC<{
     sendTransactions,
     transactions,
     disabled,
-    isSignaturePending,
+    isApprovalPending,
     isChunkingPending,
     bulkSendTransactionOptions,
     isTransactionOptionsFetching,
@@ -64,7 +64,7 @@ export const SubmitBulkDelegations: React.FC<{
     transactions?.length > 0 && !transactions.every((t) => t.state === TransactionState.complete)
 
   let content: React.ReactNode
-  if (isSignaturePending) {
+  if (isApprovalPending) {
     content = (
       <>
         <ThemedClipSpinner sizeClassName='w-3 h-3' className='mr-1' />

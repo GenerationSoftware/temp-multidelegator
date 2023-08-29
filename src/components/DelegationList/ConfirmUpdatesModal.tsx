@@ -1,6 +1,6 @@
 import { TransactionButton } from '@components/Buttons/TransactionButton'
 import { TransactionReceiptButton } from '@components/Buttons/TransactionReceiptButton'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { useTokenAllowance, useTokenBalance } from '@pooltogether/hooks'
 import { Banner, BannerTheme, BottomSheet, ModalTitle } from '@pooltogether/react-components'
 import { useTransaction, useUsersAddress } from '@pooltogether/wallet-connection'
@@ -46,7 +46,7 @@ export const ConfirmUpdatesModal: React.FC<{
   delegator: string
   transactionId: string
   transactionsPending: boolean
-  setSignaturePending: (pending: boolean) => void
+  setApprovalPending: (pending: boolean) => void
   setTransactionId: (transactionIds: string) => void
   onSuccess?: () => void
 }> = (props) => {
@@ -55,7 +55,7 @@ export const ConfirmUpdatesModal: React.FC<{
     delegator,
     transactionId,
     transactionsPending,
-    setSignaturePending,
+    setApprovalPending,
     onSuccess: _onSuccess,
     setTransactionId
   } = props
@@ -74,7 +74,7 @@ export const ConfirmUpdatesModal: React.FC<{
     useIsUserDelegatorsRepresentative(chainId, usersAddress, delegator)
   const resetAtoms = useResetDelegationAtoms()
   const { refetch } = useDelegatorsTwabDelegations(chainId, delegator)
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { refetch: refetchDelegationBalance } = useTotalAmountDelegated(chainId, delegator)
   const { refetch: refetchTicketBalance } = useTokenBalance(chainId, delegator, ticket.address)
   const { refetch: refetchStake } = useDelegatorsStake(chainId, delegator)
@@ -139,7 +139,7 @@ export const ConfirmUpdatesModal: React.FC<{
           setTransactionId={setTransactionId}
           onSuccess={onSuccess}
           setModalState={setModalState}
-          setSignaturePending={setSignaturePending}
+          setApprovalPending={setApprovalPending}
         />
       </div>
     )
@@ -266,7 +266,7 @@ interface SubmitTransactionButtonProps {
   isRepresentativeFetched: boolean
   onSuccess: () => void
   setIsOpen: (isOpen: boolean) => void
-  setSignaturePending: (pending: boolean) => void
+  setApprovalPending: (pending: boolean) => void
   setTransactionId: (id: string) => void
   setModalState: (modalState: ConfirmModalState) => void
 }
@@ -286,13 +286,13 @@ const SubmitTransactionButton: React.FC<SubmitTransactionButtonProps> = (props) 
     isUserARepresentative,
     isRepresentativeFetched,
     onSuccess,
-    setSignaturePending,
+    setApprovalPending,
     setModalState,
     setTransactionId
   } = props
   const { data: signer } = useSigner()
   const usersAddress = useUsersAddress()
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
 
   const twabDelegatorAddress = getTwabDelegatorContractAddress(chainId)
   const { isFetched: isAllowanceFetched } = useTokenAllowance(
@@ -304,7 +304,7 @@ const SubmitTransactionButton: React.FC<SubmitTransactionButtonProps> = (props) 
   const { isFetched: isStakeFetched } = useDelegatorsStake(chainId, delegator)
   const { t } = useTranslation()
 
-  const submit = useSubmitUpdateDelegationTransaction(setTransactionId, setSignaturePending, {
+  const submit = useSubmitUpdateDelegationTransaction(setTransactionId, setApprovalPending, {
     onConfirmedByUser: () => setModalState(ConfirmModalState.receipt),
     onSuccess
   })

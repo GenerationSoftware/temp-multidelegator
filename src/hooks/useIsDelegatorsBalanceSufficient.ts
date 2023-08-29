@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { useTokenBalance } from '@pooltogether/hooks'
 import { DelegationFund } from '../interfaces'
 import { useIsAmountSufficientForFunds } from './useIsAmountSufficientForFunds'
@@ -14,7 +14,7 @@ export const useIsDelegatorsBalanceSufficient = (
   delegator: string,
   delegationFunds: DelegationFund[]
 ) => {
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { data: tokenBalance, isFetched } = useTokenBalance(chainId, delegator, ticket.address)
   return useIsAmountSufficientForFunds(
     chainId,

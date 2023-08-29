@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { BottomSheet, ModalTitle, Button, ButtonTheme } from '@pooltogether/react-components'
 import { dToS } from '@pooltogether/utilities'
 import {
@@ -60,7 +60,7 @@ const EditDelegationForm: React.FC<{
     delegationId
   )
   const { t } = useTranslation()
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const addDelegationUpdate = useUpdateAtom(addDelegationUpdateAtom)
   const addDelegationCreation = useUpdateAtom(addDelegationCreationAtom)
   const addDelegationFund = useUpdateAtom(addDelegationFundAtom)

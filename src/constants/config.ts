@@ -9,8 +9,8 @@ import { Chain } from 'wagmi'
 /////////////////////////////////////////////////////////////////////
 
 export const DEFAULT_CHAIN_ID = Object.freeze({
-  [APP_ENVIRONMENTS.mainnets]: CHAIN_ID.polygon,
-  [APP_ENVIRONMENTS.testnets]: CHAIN_ID.rinkeby
+  [APP_ENVIRONMENTS.mainnets]: CHAIN_ID.optimism,
+  [APP_ENVIRONMENTS.testnets]: CHAIN_ID['optimism-goerli']
 })
 
 export const RPC_URLS = {
@@ -31,25 +31,12 @@ export const RPC_URLS = {
   [CHAIN_ID['optimism-goerli']]: process.env.NEXT_PUBLIC_OPTIMISM_GOERLI_RPC_URL,
   // Arbitrum
   [CHAIN_ID.arbitrum]: process.env.NEXT_PUBLIC_ARBITRUM_MAINNET_RPC_URL,
-  [CHAIN_ID['arbitrum-goerli']]: process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_RPC_URL,
-  // Celo
-  [CHAIN_ID.celo]: process.env.NEXT_PUBLIC_CELO_MAINNET_RPC_URL,
-  [CHAIN_ID['celo-testnet']]: process.env.NEXT_PUBLIC_CELO_TESTNET_RPC_URL
+  [CHAIN_ID['arbitrum-goerli']]: process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_RPC_URL
 }
 
 export const SUPPORTED_CHAIN_IDS = Object.freeze({
-  [APP_ENVIRONMENTS.mainnets]: [
-    CHAIN_ID.optimism,
-    CHAIN_ID.polygon,
-    CHAIN_ID.mainnet,
-    CHAIN_ID.avalanche
-  ],
-  [APP_ENVIRONMENTS.testnets]: [
-    CHAIN_ID['optimism-goerli'],
-    CHAIN_ID.mumbai,
-    CHAIN_ID.rinkeby,
-    CHAIN_ID.fuji
-  ]
+  [APP_ENVIRONMENTS.mainnets]: [CHAIN_ID.optimism],
+  [APP_ENVIRONMENTS.testnets]: [CHAIN_ID['optimism-goerli']]
 })
 
 export const SUPPORTED_CHAINS: { [key: string]: Chain[] } = Object.freeze({
@@ -63,15 +50,8 @@ export const ALL_SUPPORTED_CHAINS: Chain[] = [
 ]
 
 export const TWAB_DELEGATOR_ADDRESS: { [chainId: number]: string } = Object.freeze({
-  [CHAIN_ID.optimism]: '0x469C6F4c1AdA45EB2E251685aC2bf05aEd591E70',
-  [CHAIN_ID.polygon]: '0x89Ee77Ce3F4C1b0346FF96E3004ff7C9f972dEF8',
-  [CHAIN_ID.mainnet]: '0x5cFbEE38362B9A60be276763753f64245EA990F7',
-  [CHAIN_ID.avalanche]: '0xd23723fef8A16B77eaDc1fC822aE4170bA9d4009',
-  [CHAIN_ID['optimism-kovan']]: '0xDDbd5eab2011a2240F69FD1255246922931C66A6',
-  [CHAIN_ID['optimism-goerli']]: '0x6176776490147b41813C1a0e342080d2CAA4e618',
-  [CHAIN_ID.mumbai]: '0xaAc4688AB7AD2c0CbC51E9674D53Bf394910aF6a',
-  [CHAIN_ID.rinkeby]: '0x448200d83e48f561B42e90274566d3FA3914B8A4',
-  [CHAIN_ID.fuji]: '0xdB4B551C21860028c4CA951CC7067699eB7c5Bfe'
+  [CHAIN_ID.optimism]: '',
+  [CHAIN_ID['optimism-goerli']]: '0x83914F17c4Ad77D8849745d9Fa930325E7e65108'
 })
 
 export const QUERY_PARAM = Object.freeze({

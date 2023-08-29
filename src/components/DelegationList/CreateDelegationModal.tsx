@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { BottomSheet, ModalTitle } from '@pooltogether/react-components'
 import { dToS } from '@pooltogether/utilities'
 import {
@@ -53,7 +53,7 @@ const CreateDelegationForm: React.FC<{
   closeModal: () => void
 }> = (props) => {
   const { chainId, delegationId, closeModal } = props
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { t } = useTranslation()
 
   const addDelegationCreation = useUpdateAtom(addDelegationCreationAtom)

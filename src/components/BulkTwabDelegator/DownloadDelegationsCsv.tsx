@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { Button, ButtonSize } from '@pooltogether/react-components'
 import { delegationChainIdAtom, delegatorAtom } from '../../atoms'
 import { useDelegatorsTwabDelegations } from '@hooks/useDelegatorsTwabDelegations'
@@ -11,7 +11,7 @@ export const DownloadDelegationsCsv = () => {
   const [chainId] = useAtom(delegationChainIdAtom)
   const [delegator] = useAtom(delegatorAtom)
   const { data: delegations, isFetched } = useDelegatorsTwabDelegations(chainId, delegator)
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
 
   return (
     <Button

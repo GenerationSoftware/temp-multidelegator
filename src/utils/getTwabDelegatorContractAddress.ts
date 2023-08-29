@@ -1,3 +1,5 @@
 import { TWAB_DELEGATOR_ADDRESS } from '@constants/config'
 
-export const getTwabDelegatorContractAddress = (chainId: number) => TWAB_DELEGATOR_ADDRESS[chainId]
+export const getTwabDelegatorContractAddress = (chainId: number) => {
+  return TWAB_DELEGATOR_ADDRESS[chainId]
+}

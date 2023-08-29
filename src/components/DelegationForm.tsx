@@ -1,7 +1,7 @@
 import { ErrorMessage } from '@components/ErrorMessage'
 import { StyledInput } from '@components/Input'
 import { Label } from '@components/Label'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { Button, Tooltip } from '@pooltogether/react-components'
 import { sToD } from '@pooltogether/utilities'
 import { useMaxLockDuration } from '@hooks/useMaxLockDuration'
@@ -25,7 +25,7 @@ interface DelegationFormProps {
 export const DelegationForm: React.FC<DelegationFormProps> = (props) => {
   const { onSubmit, defaultValues, submitString, chainId } = props
 
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { data: maxLockDuration, isFetched: isMaxLockFetched } = useMaxLockDuration(chainId)
 
   const {

@@ -1,7 +1,7 @@
 import { StyledInput } from '@components/Input'
 import { StakeSvg } from '@components/SvgComponents'
 import { ToolNetworkSelectionTrigger } from '@components/ToolNetworkSelectionTrigger'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { useTokenBalance } from '@pooltogether/hooks'
 import {
   BottomSheet,
@@ -38,7 +38,7 @@ interface UsersDelegationStateProps {
 
 export const UsersDelegationState: React.FC<UsersDelegationStateProps> = (props) => {
   const { className, chainId, setChainId, setDelegator, delegator } = props
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { data: ticketBalance, isFetched: isTicketBalanceFetched } = useTokenBalance(
     chainId,
     delegator,

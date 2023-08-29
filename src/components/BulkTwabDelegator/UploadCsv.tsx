@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { ThemedClipSpinner } from '@pooltogether/react-components'
 import { dToS } from '@pooltogether/utilities'
 import { useIsWalletConnected } from '@pooltogether/wallet-connection'
@@ -26,7 +26,7 @@ export const UploadCsv: React.FC<{
   const isWalletConnected = useIsWalletConnected()
   const [chainId] = useAtom(delegationChainIdAtom)
   const [delegator] = useAtom(delegatorAtom)
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const [isUploading, setIsUploading] = useState(false)
   const { data: delegations, isFetched } = useDelegatorsTwabDelegations(chainId, delegator)
   const isDelegationsLocked = useIsADelegationLocked(chainId, delegator)

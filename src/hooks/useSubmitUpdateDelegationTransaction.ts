@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { useTokenAllowance } from '@pooltogether/hooks'
 import {
   SendTransactionOptions,
@@ -17,8 +17,8 @@ import {
 import { DelegationId } from '../interfaces'
 import { getTwabDelegatorContract } from '@utils/getTwabDelegatorContract'
 import { getTwabDelegatorContractAddress } from '@utils/getTwabDelegatorContractAddress'
-import { getV4TicketContract } from '@utils/getV4TicketContract'
-import { signERC2612Permit } from 'eth-permit'
+import { getTicketContract } from '@utils/getTicketContract'
+// import { signERC2612Permit } from 'eth-permit'
 import { BigNumber, PopulatedTransaction } from 'ethers'
 import { useAtom } from 'jotai'
 import { useTranslation } from 'next-i18next'
@@ -26,10 +26,11 @@ import { toast } from 'react-toastify'
 import { useSigner } from 'wagmi'
 import { useDelegatorsTwabDelegations } from './useDelegatorsTwabDelegations'
 import { useIsUserDelegatorsRepresentative } from './useIsUserDelegatorsRepresentative'
+import { approveErc20Spender } from '@utils/transactions/approveErc20Spender'
 
 export const useSubmitUpdateDelegationTransaction = (
   setTransactionId: (id: string) => void,
-  setSignaturePending: (isPending: boolean) => void,
+  setApprovalPending: (isPending: boolean) => void,
   callbacks?: TransactionCallbacks
 ) => {
   const [chainId] = useAtom(delegationChainIdAtom)
@@ -46,7 +47,7 @@ export const useSubmitUpdateDelegationTransaction = (
     delegator
   )
   const { refetch: getSigner } = useSigner()
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const twabDelegatorAddress = getTwabDelegatorContractAddress(chainId)
   const { data: allowance } = useTokenAllowance(
     chainId,
@@ -67,7 +68,7 @@ export const useSubmitUpdateDelegationTransaction = (
   return async () => {
     const { data: signer } = await getSigner()
     const twabDelegatorContract = getTwabDelegatorContract(chainId, signer)
-    const ticketContract = getV4TicketContract(chainId)
+    const ticketContract = getTicketContract(chainId)
     const fnCalls: string[] = []
     const withdrawToStakeFnCalls: string[] = []
     const depositToStakeFnCalls: string[] = []
@@ -172,63 +173,71 @@ export const useSubmitUpdateDelegationTransaction = (
 
     let transactionToSend: SendTransactionOptions
 
-    // If allowance is not high enough get a Permit signature for permitAndMulticall
+    // If allowance is not high enough get an approval
     if (!isUserARepresentative && !totalAmountToFund.isZero() && allowance.lt(totalAmountToFund)) {
-      setSignaturePending(true)
+      setApprovalPending(true)
 
       const amountToIncrease = totalAmountToFund //.sub(allowance)
 
-      const domain = {
-        name: 'PoolTogether ControlledToken',
-        version: '1',
-        chainId,
-        verifyingContract: ticketContract.address
-      }
+      // const domain = {
+      //   name: 'PoolTogether ControlledToken',
+      //   version: '1',
+      //   chainId,
+      //   verifyingContract: ticketContract.address
+      // }
 
       // NOTE: Nonce must be passed manually for signERC2612Permit to work with WalletConnect
-      const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
-      const response = await ticketContract.functions.nonces(usersAddress)
-      const nonce: BigNumber = response[0]
+      // const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
+      // const response = await ticketContract.functions.nonces(usersAddress)
+      // const nonce: BigNumber = response[0]
 
-      const signaturePromise = signERC2612Permit(
+      // const signaturePromise = signERC2612Permit(
+      //   signer,
+      //   domain,
+      //   usersAddress,
+      //   twabDelegatorContract.address,
+      //   amountToIncrease.toString(),
+      //   deadline,
+      //   nonce.toNumber()
+      // )
+
+      const approvalPromise = approveErc20Spender(
         signer,
-        domain,
-        usersAddress,
+        ticketContract.address,
         twabDelegatorContract.address,
-        amountToIncrease.toString(),
-        deadline,
-        nonce.toNumber()
+        amountToIncrease
       )
 
-      toast.promise(signaturePromise, {
+      toast.promise(approvalPromise, {
         pending: t('signatureIsPending'),
         error: t('signatureRejected')
       })
 
       try {
-        const signature = await signaturePromise
+        // const signature = await signaturePromise
+        await approvalPromise
 
         // Overwrite v for hardware wallet signatures
         // https://ethereum.stackexchange.com/questions/103307/cannot-verifiy-a-signature-produced-by-ledger-in-solidity-using-ecrecover
-        const v = signature.v < 27 ? signature.v + 27 : signature.v
+        // const v = signature.v < 27 ? signature.v + 27 : signature.v
 
-        transactionToSend = {
-          name: t('updateDelegations'),
-          callTransaction: async () =>
-            twabDelegatorContract.permitAndMulticall(
-              amountToIncrease,
-              {
-                deadline: signature.deadline,
-                v,
-                r: signature.r,
-                s: signature.s
-              },
-              fnCalls
-            ),
-          callbacks
-        }
+        // transactionToSend = {
+        //   name: t('updateDelegations'),
+        //   callTransaction: async () =>
+        //     twabDelegatorContract.permitAndMulticall(
+        //       amountToIncrease,
+        //       {
+        //         deadline: signature.deadline,
+        //         v,
+        //         r: signature.r,
+        //         s: signature.s
+        //       },
+        //       fnCalls
+        //     ),
+        //   callbacks
+        // }
       } catch (e) {
-        setSignaturePending(false)
+        setApprovalPending(false)
         console.error(e)
         return
       }
@@ -240,7 +249,7 @@ export const useSubmitUpdateDelegationTransaction = (
       }
     }
 
-    setTransactionId(sendTransaction(transactionToSend))
-    setSignaturePending(false)
+    !!transactionToSend && setTransactionId(sendTransaction(transactionToSend))
+    setApprovalPending(false)
   }
 }

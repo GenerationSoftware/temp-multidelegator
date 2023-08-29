@@ -1,4 +1,4 @@
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { sToD } from '@pooltogether/utilities'
 import {
   delegationCreationsAtom,
@@ -18,7 +18,7 @@ import { useDelegatorsTwabDelegations } from './useDelegatorsTwabDelegations'
  * @returns
  */
 export const useDelegationConfirmationStrings = (chainId: number, delegator: string) => {
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const { data: delegationData, isFetched } = useDelegatorsTwabDelegations(chainId, delegator)
   const [delegationUpdates] = useAtom(delegationUpdatesAtom)
   const [delegationCreations] = useAtom(delegationCreationsAtom)

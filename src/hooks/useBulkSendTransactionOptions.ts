@@ -1,5 +1,5 @@
 import { useLatestBlock } from '@hooks/useLatestBlock'
-import { useV4Ticket } from '@hooks/v4/useV4Ticket'
+import { useTicket } from '@hooks/useTicket'
 import { useTokenAllowance } from '@pooltogether/hooks'
 import {
   SendTransactionOptions,
@@ -11,8 +11,8 @@ import { DelegationFund, DelegationId, DelegationUpdate } from '../interfaces'
 import { getTwabDelegatorContract } from '@utils/getTwabDelegatorContract'
 import { getTwabDelegatorContractAddress } from '@utils/getTwabDelegatorContractAddress'
 import { chunkArray } from '@utils/chunkArray'
-import { getV4TicketContract } from '@utils/getV4TicketContract'
-import { signERC2612Permit } from 'eth-permit'
+import { getTicketContract } from '@utils/getTicketContract'
+// import { signERC2612Permit } from 'eth-permit'
 import { BigNumber, PopulatedTransaction } from 'ethers'
 import { useAtom } from 'jotai'
 import { useTranslation } from 'next-i18next'
@@ -23,13 +23,14 @@ import { useDelegatorsTwabDelegations } from './useDelegatorsTwabDelegations'
 import { useIsDelegatorsBalanceSufficient } from './useIsDelegatorsBalanceSufficient'
 import { useIsDelegatorsStakeSufficient } from './useIsDelegatorsStakeSufficient'
 import { useIsUserDelegatorsRepresentative } from './useIsUserDelegatorsRepresentative'
+import { approveErc20Spender } from '@utils/transactions/approveErc20Spender'
 
 /**
  *
  * @param delegationUpdates
  * @param delegationCreations
  * @param delegationFunds
- * @param setSignaturePending
+ * @param setApprovalPending
  * @param setChunkingPending
  * @returns
  */
@@ -39,7 +40,7 @@ export const useBulkSendTransactionOptions = (
     delegationCreations: DelegationUpdate[]
     delegationFunds: DelegationFund[]
   },
-  setSignaturePending: (isPending: boolean) => void,
+  setApprovalPending: (isPending: boolean) => void,
   setChunkingPending: (isPending: boolean) => void,
   pushTransactionId: (id: string) => void,
   resetTransactionIds: () => void
@@ -59,7 +60,7 @@ export const useBulkSendTransactionOptions = (
     chainId,
     delegator
   )
-  const ticket = useV4Ticket(chainId)
+  const ticket = useTicket(chainId)
   const twabDelegatorAddress = getTwabDelegatorContractAddress(chainId)
   const { data: allowance } = useTokenAllowance(
     chainId,
@@ -167,7 +168,7 @@ export const useBulkSendTransactionOptions = (
       const { delegationUpdates, delegationCreations, delegationFunds } = csvUpdates
 
       const twabDelegatorContract = getTwabDelegatorContract(chainId, signer)
-      const ticketContract = getV4TicketContract(chainId)
+      const ticketContract = getTicketContract(chainId)
       const fnCalls: string[] = []
       const withdrawToStakeFnCalls: string[] = []
       const depositToStakeFnCalls: string[] = []
@@ -258,86 +259,95 @@ export const useBulkSendTransactionOptions = (
         !totalAmountToFund.isZero() &&
         allowance.lt(totalAmountToFund)
       ) {
-        setSignaturePending(true)
+        setApprovalPending(true)
 
         const amountToIncrease = totalAmountToFund.sub(allowance)
-        const domain = {
-          name: 'PoolTogether ControlledToken',
-          version: '1',
-          chainId,
-          verifyingContract: ticketContract.address
-        }
+        // const domain = {
+        //   name: 'PoolTogether ControlledToken',
+        //   version: '1',
+        //   chainId,
+        //   verifyingContract: ticketContract.address
+        // }
 
         // NOTE: Nonce must be passed manually for signERC2612Permit to work with WalletConnect
-        const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
-        const response = await ticketContract.functions.nonces(usersAddress)
-        const nonce: BigNumber = response[0]
+        // const deadline = (await signer.provider.getBlock('latest')).timestamp + 5 * 60
+        // const response = await ticketContract.functions.nonces(usersAddress)
+        // const nonce: BigNumber = response[0]
 
-        const signaturePromise = signERC2612Permit(
+        // const signaturePromise = signERC2612Permit(
+        //   signer,
+        //   domain,
+        //   usersAddress,
+        //   twabDelegatorContract.address,
+        //   amountToIncrease.toString(),
+        //   deadline,
+        //   nonce.toNumber()
+        // )
+
+        const approvalPromise = approveErc20Spender(
           signer,
-          domain,
-          usersAddress,
+          ticketContract.address,
           twabDelegatorContract.address,
-          amountToIncrease.toString(),
-          deadline,
-          nonce.toNumber()
+          amountToIncrease
         )
 
-        toast.promise(signaturePromise, {
+        toast.promise(approvalPromise, {
           pending: t('signatureIsPending'),
           error: t('signatureRejected')
         })
 
         try {
-          const signature = await signaturePromise
-          setChunkingPending(true)
-          setSignaturePending(false)
+          // const signature = await signaturePromise
+          await approvalPromise
+
+          // setChunkingPending(true)
+          setApprovalPending(false)
 
           // Overwrite v for hardware wallet signatures
           // https://ethereum.stackexchange.com/questions/103307/cannot-verifiy-a-signature-produced-by-ledger-in-solidity-using-ecrecover
-          const v = signature.v < 27 ? signature.v + 27 : signature.v
+          // const v = signature.v < 27 ? signature.v + 27 : signature.v
 
-          const estimatePermitAndMulticallGas = (fnCalls: string[]) =>
-            twabDelegatorContract.estimateGas.permitAndMulticall(
-              amountToIncrease,
-              {
-                deadline: signature.deadline,
-                v,
-                r: signature.r,
-                s: signature.s
-              },
-              fnCalls
-            )
+          // const estimatePermitAndMulticallGas = (fnCalls: string[]) =>
+          //   twabDelegatorContract.estimateGas.permitAndMulticall(
+          //     amountToIncrease,
+          //     {
+          //       deadline: signature.deadline,
+          //       v,
+          //       r: signature.r,
+          //       s: signature.s
+          //     },
+          //     fnCalls
+          //   )
 
-          const chunkedFnCalls = await getChunkedFnCalls(fnCalls, estimatePermitAndMulticallGas)
+          // const chunkedFnCalls = await getChunkedFnCalls(fnCalls, estimatePermitAndMulticallGas)
 
-          transactionsToSend.push({
-            name: t('updateDelegations'),
-            callTransaction: async () =>
-              twabDelegatorContract.permitAndMulticall(
-                amountToIncrease,
-                {
-                  deadline: signature.deadline,
-                  v,
-                  r: signature.r,
-                  s: signature.s
-                },
-                chunkedFnCalls[0]
-              )
-          })
+          // transactionsToSend.push({
+          //   name: t('updateDelegations'),
+          //   callTransaction: async () =>
+          //     twabDelegatorContract.permitAndMulticall(
+          //       amountToIncrease,
+          //       {
+          //         deadline: signature.deadline,
+          //         v,
+          //         r: signature.r,
+          //         s: signature.s
+          //       },
+          //       chunkedFnCalls[0]
+          //     )
+          // })
 
           // TODO: it worked for a rep but not for the delegator themself
-          if (chunkedFnCalls.length > 1) {
-            for (let i = 1; i < chunkedFnCalls.length; i++) {
-              transactionsToSend.push({
-                name: t('updateDelegations'),
-                callTransaction: async () => twabDelegatorContract.multicall(chunkedFnCalls[i])
-              })
-            }
-          }
+          // if (chunkedFnCalls.length > 1) {
+          //   for (let i = 1; i < chunkedFnCalls.length; i++) {
+          //     transactionsToSend.push({
+          //       name: t('updateDelegations'),
+          //       callTransaction: async () => twabDelegatorContract.multicall(chunkedFnCalls[i])
+          //     })
+          //   }
+          // }
         } catch (e) {
-          setSignaturePending(false)
-          setChunkingPending(false)
+          setApprovalPending(false)
+          // setChunkingPending(false)
           console.error(e)
           return
         }

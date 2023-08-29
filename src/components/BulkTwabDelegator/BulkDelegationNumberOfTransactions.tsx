@@ -1,14 +1,14 @@
 import { SendTransactionOptions } from '@pooltogether/wallet-connection'
 
 export const BulkDelegationNumberOfTransactions: React.FC<{
-  isSignaturePending: boolean
+  isApprovalPending: boolean
   isChunkingPending: boolean
   bulkSendTransactionOptions: SendTransactionOptions[]
   isTransactionOptionsFetching: boolean
   isTransactionOptionsFetched: boolean
 }> = (props) => {
   const {
-    isSignaturePending,
+    isApprovalPending,
     isChunkingPending,
     isTransactionOptionsFetching,
     isTransactionOptionsFetched,
@@ -17,7 +17,7 @@ export const BulkDelegationNumberOfTransactions: React.FC<{
 
   let content: React.ReactNode
 
-  if (isSignaturePending) {
+  if (isApprovalPending) {
     content = 'Pending wallet signature'
   } else if (isChunkingPending || isTransactionOptionsFetching) {
     content = 'Building transactions'
