@@ -45,7 +45,7 @@ export const ALL_SUPPORTED_CHAINS: Chain[] = [
 
 export const TWAB_DELEGATOR_ADDRESS: { [chainId: number]: string } = Object.freeze({
   [CHAIN_ID.optimism]: '',
-  [CHAIN_ID['optimism-goerli']]: '0x83914F17c4Ad77D8849745d9Fa930325E7e65108'
+  [CHAIN_ID['optimism-goerli']]: '0x9bF8a65D40d54618F659DB7d28c05DfCDCdeaFdC'
 })
 
 export const QUERY_PARAM = Object.freeze({

@@ -9,7 +9,7 @@ export const TICKET: { [chainId: number]: Token } = Object.freeze({
     decimals: '6'
   },
   [CHAIN_ID['optimism-goerli']]: {
-    address: '0x0410CaE69dD01f58224d54881648E35c6CB874FA',
+    address: '0xA1860843Be50A4795f2b10E2ADBA0b8e7C602041',
     symbol: 'PTUSDCHYT',
     name: 'PoolTogether USDC Prize Token',
     decimals: '6'
