@@ -3,9 +3,9 @@ import { Token } from '@pooltogether/hooks'
 
 export const TICKET: { [chainId: number]: Token } = Object.freeze({
   [CHAIN_ID.optimism]: {
-    address: '0x62BB4fc73094c83B5e952C2180B23fA7054954c4', // TODO: update on actual V5 deployment
-    symbol: 'PTaUSDC',
-    name: 'Prize Aave USDC',
+    address: '0x31515cfC4550d9C83E2d86E8a352886d1364E2D9',
+    symbol: 'PTUSDC',
+    name: 'Prize USDC',
     decimals: '6'
   },
   [CHAIN_ID['optimism-goerli']]: {

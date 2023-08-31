@@ -44,7 +44,7 @@ export const ALL_SUPPORTED_CHAINS: Chain[] = [
 ]
 
 export const TWAB_DELEGATOR_ADDRESS: { [chainId: number]: string } = Object.freeze({
-  [CHAIN_ID.optimism]: '',
+  [CHAIN_ID.optimism]: '0xF93329E78FefF1145fCe03A79d5b356588DeA215',
   [CHAIN_ID['optimism-goerli']]: '0x9bF8a65D40d54618F659DB7d28c05DfCDCdeaFdC'
 })
 
