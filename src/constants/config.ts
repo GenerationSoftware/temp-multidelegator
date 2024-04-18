@@ -30,7 +30,7 @@ export const RPC_URLS = {
 
 export const SUPPORTED_CHAIN_IDS = Object.freeze({
   [APP_ENVIRONMENTS.mainnets]: [CHAIN_ID.optimism],
-  [APP_ENVIRONMENTS.testnets]: [CHAIN_ID['optimism-goerli']]
+  [APP_ENVIRONMENTS.testnets]: []
 })
 
 export const SUPPORTED_CHAINS: { [key: string]: Chain[] } = Object.freeze({
@@ -44,8 +44,7 @@ export const ALL_SUPPORTED_CHAINS: Chain[] = [
 ]
 
 export const TWAB_DELEGATOR_ADDRESS: { [chainId: number]: string } = Object.freeze({
-  [CHAIN_ID.optimism]: '0x3989CBC1FB0eb278601c018eD7627B07be9De4cB',
-  [CHAIN_ID['optimism-goerli']]: '0x43522DfD29B8a975059F93b03DaB1545935710Bb'
+  [CHAIN_ID.optimism]: '0x49148543034f9ba3005c1d40ca9e6ffaf20b42c6'
 })
 
 export const QUERY_PARAM = Object.freeze({
